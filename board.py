@@ -1,45 +1,14 @@
 class board:
     def __init__(self):
-        """
-        Erstelle ein board
-        grid[row][col]
+        """Initialisiert ein leeres 9x9-Sudoku-Board.
+
+        Das Board wird als Matrix gespeichert: grid[row][col].
+        Leere Felder haben den Wert 0.
         """
         self.grid = [[0 for j in range(9)] for i in range(9)]
 
-    def add_value(self, row, col, value):
-        """
-        Füge in Zeile row und spalte col einen Wert value ein.
-        """
-        if type(value) != int or value < 0 or value > 9:
-            raise ValueError("Ungültiger Wert: " + str(value))
-        self.grid[row][col] = value
-
-    def get_col(self, col):
-        column = []
-        for i, row in enumerate(self.grid):
-            column.append(row[col])
-        return column
-
-    def get_row(self, row):
-        return self.grid[row]
-
-    def get_block(self, row, col):
-        """
-        Gibt den gesamten Block zurück, anhand der Koordinaten im Grid
-        :row: Zeile
-        :col: Spalte
-        """
-        # Finde zunächst obere linke Ecke des Blocks
-        start_row = (row // 3) * 3
-        start_col = (col // 3) * 3
-
-        current_block = []  # Liste, die die Werte des Blocks enthält
-        for r in range(start_row, start_row + 3):
-            for c in range(start_col, start_col + 3):
-                current_block.append(self.grid[r][c])
-        return current_block
-
-    def __str__(self):
+    def __str__(self) -> str:
+        """Gibt eine formatierte Textdarstellung des Boards zurück."""
         output = ""
         for i, row in enumerate(self.grid):
             for j, val in enumerate(row):
@@ -53,17 +22,134 @@ class board:
                 output += "-------+--------+------- \n"
         return output
 
-    def is_solved(self, typ: str, row=None, col=None):
+    def add_value(self, row: int, col: int, value: int) -> None:
+        """Setzt einen Wert in eine bestimmte Zelle.
+
+        Args:
+            row: Zeilenindex von 0 bis 8.
+            col: Spaltenindex von 0 bis 8.
+            value: Zellwert von 0 bis 9 (0 steht für leer).
+
+        Raises:
+            ValueError: Wenn Koordinaten oder Wert außerhalb der erlaubten Bereiche liegen.
         """
-        :typ: definiert ob Block, Reihe oder Spalte [block, row, col]
-        :i: Welche row
-        :j: welche col
+        # Validiere row, col sind im gültigen Bereich (0-8)
+        if row < 0 or row >= 9 or col < 0 or col >= 9:
+            raise ValueError(
+                f"Ungültige Koordinaten: row={row}, col={col}. Muss zwischen 0-8 liegen."
+            )
+        # Validiere value ist zwischen 0-9
+        if not isinstance(value, int) or value < 0 or value > 9:
+            raise ValueError(
+                f"Ungültiger Wert: {value}. Muss zwischen 0-9 liegen und integer sein."
+            )
+        self.grid[row][col] = value
+
+    def get_col(self, col: int) -> list[int]:
+        """Gibt die Werte einer Spalte als Liste zurück.
+
+        Args:
+            col: Spaltenindex von 0 bis 8.
+
+        Raises:
+            ValueError: Wenn der Spaltenindex ungültig ist.
+        """
+        if col < 0 or col >= 9:
+            raise ValueError(f"Ungültige Spalte: col={col}. Muss zwischen 0-8 liegen.")
+
+        column = []
+        for i, row in enumerate(self.grid):
+            column.append(row[col])
+        return column
+
+    def get_row(self, row: int) -> list[int]:
+        """Gibt die Werte einer Zeile als Liste zurück.
+
+        Args:
+            row: Zeilenindex von 0 bis 8.
+
+        Raises:
+            ValueError: Wenn der Zeilenindex ungültig ist.
+        """
+        if row < 0 or row >= 9:
+            raise ValueError(f"Ungültige Zeile: row={row}. Muss zwischen 0-8 liegen.")
+
+        return self.grid[row]
+
+    def is_valid_move(self, row: int, col: int, value: int) -> bool:
+        """Prüft, ob ein Wert an einer Position regelkonform gesetzt ist
+
+        Ein Zug ist nur dann gültig, wenn der Wert noch nicht in derselben
+        Zeile, Spalte oder im selben 3x3-Block vorkommt.
+
+        Args:
+            row: Zeilenindex von 0 bis 8.
+            col: Spaltenindex von 0 bis 8.
+            value: Zu prüfender Wert von 1 bis 9.
+
+        Raises:
+            ValueError: Wenn Koordinaten oder Wert ungültig sind.
+        """
+        if row < 0 or row >= 9 or col < 0 or col >= 9:
+            raise ValueError(f"Ungültige Koordinaten: row={row}, col={col}")
+        if not isinstance(value, int) or value < 1 or value > 9:
+            raise ValueError(f"Ungültiger Wert: {value}. Nur Werte 1-9 erlaubt.")
+
+        # Wert darf nicht schon in gleicher Reihe sein
+        if value in self.get_row(row):
+            return False
+        # Wert darf nicht schon in gleicher Spalte sein
+        if value in self.get_col(col):
+            return False
+        # Wert darf nicht schon im Block sein
+        if value in self.get_block(row, col):
+            return False
+        return True
+
+    def get_block(self, row: int, col: int) -> list[int]:
+        """Gibt den 3x3-Block einer Position als flache Liste zurück.
+
+        Args:
+            row: Zeilenindex von 0 bis 8.
+            col: Spaltenindex von 0 bis 8.
+
+        Raises:
+            ValueError: Wenn Koordinaten ungültig sind.
+        """
+        if row < 0 or row >= 9 or col < 0 or col >= 9:
+            raise ValueError(f"Ungültige Koordinaten: row={row}, col={col}")
+
+        # Finde zunächst obere linke Ecke des Blocks
+        start_row = (row // 3) * 3
+        start_col = (col // 3) * 3
+
+        current_block = []  # Liste, die die Werte des Blocks enthält
+        for r in range(start_row, start_row + 3):
+            for c in range(start_col, start_col + 3):
+                current_block.append(self.grid[r][c])
+        return current_block
+
+    def is_solved(
+        self, typ: str, row: int | None = None, col: int | None = None
+    ) -> bool:
+        """Prüft, ob eine Zeile, Spalte oder ein Block vollständig gelöst ist.
+
+        Args:
+            typ: Art der Prüfung: "block", "row" oder "col".
+            row: Zeilenindex für "row" oder "block".
+            col: Spaltenindex für "col" oder "block".
+
+        Returns:
+            True, wenn der gewählte Bereich die Zahlen 1-9 genau einmal enthält,
+            sonst False.
         """
 
         if typ == "block":
+            if row is None or col is None:
+                raise ValueError("Für 'block' müssen row und col angegeben werden.")
             check = self.get_block(row, col)
-            # ueberprüfe, ob alle Werte von 1-9 vorhanden sind
-            if any(x < 0 and x > 10 for x in check):
+            # ueberprüfe, ob alle Werte zwischen 1-9 liegen (kein 0)
+            if any(x < 1 or x > 9 for x in check):
                 raise ValueError("Ungültige Werte im Block")
             if len(set(check)) != 9:
                 return False
@@ -73,6 +159,8 @@ class board:
                 else:
                     return True
         elif typ == "row":
+            if row is None:
+                raise ValueError("Für 'row' muss ein Zeilenindex angegeben werden.")
             check = self.get_row(row)
             if len(set(check)) != 9:
                 return False
@@ -82,6 +170,8 @@ class board:
                 else:
                     return True
         elif typ == "col":
+            if col is None:
+                raise ValueError("Für 'col' muss ein Spaltenindex angegeben werden.")
             check = self.get_col(col)
             if len(set(check)) != 9:
                 return False
