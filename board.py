@@ -22,6 +22,10 @@ class board:
                 output += "-------+--------+------- \n"
         return output
 
+    def __repr__(self) -> str:
+        """Gibt eine kompakte Darstellung des Boards zurück."""
+        return f"board({self.grid})"
+
     def add_value(self, row: int, col: int, value: int) -> None:
         """Setzt einen Wert in eine bestimmte Zelle.
 
@@ -154,9 +158,13 @@ class board:
             if row is None or col is None:
                 raise ValueError("Für 'block' müssen row und col angegeben werden.")
             check = self.get_block(row, col)
+
             # ueberprüfe, ob alle Werte zwischen 1-9 liegen (kein 0)
-            if any(x < 1 or x > 9 for x in check):
-                raise ValueError("Ungültige Werte im Block")
+            invalid = next((x for x in check if x < 1 or x > 9), None)
+            if invalid is not None:
+                raise ValueError(
+                    f"Ungültiger Wert {invalid} im Block: {self.get_block(row, col)}"
+                )
             if len(set(check)) != 9:
                 return False
             else:
@@ -168,8 +176,9 @@ class board:
             if row is None:
                 raise ValueError("Für 'row' muss ein Zeilenindex angegeben werden.")
             check = self.get_row(row)
+            invalid = next((x for x in check if x < 1 or x > 9), None)
             if any(x < 1 or x > 9 for x in check):
-                raise ValueError("Ungültige Werte in der Zeile")
+                raise ValueError(f"Ungültige Werte {invalid} in der Zeile {row}")
             if len(set(check)) != 9:
                 return False
             else:
@@ -181,8 +190,9 @@ class board:
             if col is None:
                 raise ValueError("Für 'col' muss ein Spaltenindex angegeben werden.")
             check = self.get_col(col)
-            if any(x < 1 or x > 9 for x in check):
-                raise ValueError("Ungültige Werte in der Spalte")
+            invalid = next((x for x in check if x < 1 or x > 9), None)
+            if invalid is not None:
+                raise ValueError(f"Ungültiger Wert {invalid} in der Spalte: {col}")
 
             if len(set(check)) != 9:
                 return False
