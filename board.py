@@ -1,4 +1,4 @@
-class board:
+class Board:
     def __init__(self):
         """Initialisiert ein leeres 9x9-Sudoku-Board.
 
@@ -204,7 +204,7 @@ class board:
 
 
 if __name__ == "__main__":
-    brett = board()
+    brett = Board()
     brett.add_value(2, 2, 5)
     brett.add_value(7, 2, 4)
     brett.add_value(0, 0, 5)

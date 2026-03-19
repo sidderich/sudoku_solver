@@ -6,11 +6,11 @@ import pytest
 # Ensure project root is importable when pytest is started from tests/ or elsewhere.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from board import board
+from board import Board
 
 
 def test_board_validity_simple_positive():
-    brett = board()
+    brett = Board()
     valid_board = [
         [5, 3, 4, 6, 7, 8, 9, 1, 2],
         [6, 7, 2, 1, 9, 5, 3, 4, 8],
@@ -35,7 +35,7 @@ def test_board_validity_simple_positive():
 
 
 def test_board_validity_simple_negative():
-    brett = board()
+    brett = Board()
     # Erstellen eines ungültigen Boards mit einem Fehler in der Zeile 7 (doppelte 3), aber 9x9
     invalid_board = [
         [5, 3, 4, 6, 7, 8, 9, 1, 2],
@@ -56,7 +56,7 @@ def test_board_validity_simple_negative():
 
 
 def test_is_solved_row_raises_on_invalid_row_values():
-    brett = board()
+    brett = Board()
     # 0 ist in is_solved("row") als ungültiger Wert definiert und soll ValueError werfen.
     brett.add_value(0, 0, 0)
 
@@ -65,7 +65,7 @@ def test_is_solved_row_raises_on_invalid_row_values():
 
 
 def test_is_solved_block_raises_on_invalid_block_values():
-    brett = board()
+    brett = Board()
     # 0 ist in is_solved("block") als ungültiger Wert definiert und soll ValueError werfen.
     brett.add_value(0, 0, 0)
 
@@ -74,7 +74,7 @@ def test_is_solved_block_raises_on_invalid_block_values():
 
 
 def test_is_solved_col_raises_on_invalid_col_values():
-    brett = board()
+    brett = Board()
     # 0 ist in is_solved("col") als ungültiger Wert definiert und soll ValueError werfen.
     brett.add_value(0, 0, 0)
 
@@ -83,7 +83,7 @@ def test_is_solved_col_raises_on_invalid_col_values():
 
 
 def test_is_solved_block_raises_on_missing_row_col():
-    brett = board()
+    brett = Board()
     with pytest.raises(
         ValueError,
         match="Für 'block' müssen row und col angegeben werden.",
@@ -92,7 +92,7 @@ def test_is_solved_block_raises_on_missing_row_col():
 
 
 def test_is_solved_row_raises_on_missing_row():
-    brett = board()
+    brett = Board()
     with pytest.raises(
         ValueError, match="Für 'row' muss ein Zeilenindex angegeben werden."
     ):
@@ -100,7 +100,7 @@ def test_is_solved_row_raises_on_missing_row():
 
 
 def test_is_solved_col_raises_on_missing_col():
-    brett = board()
+    brett = Board()
     with pytest.raises(
         ValueError, match="Für 'col' muss ein Spaltenindex angegeben werden."
     ):
@@ -108,7 +108,7 @@ def test_is_solved_col_raises_on_missing_col():
 
 
 def test_is_solved_invalid_type():
-    brett = board()
+    brett = Board()
     with pytest.raises(
         ValueError,
         match="Ungültiger Typ: invalid. Muss 'block', 'row' oder 'col' sein.",
@@ -117,7 +117,7 @@ def test_is_solved_invalid_type():
 
 
 def test_is_solved_block_with_invalid_block():
-    brett = board()
+    brett = Board()
     # Erstelle ein 9x9  board mit zwei 5 im Block (0,0) und ansonsten gültigen Werten
     invalid_block_board = [
         [5, 3, 4, 6, 7, 8, 9, 1, 2],
