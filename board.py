@@ -76,35 +76,38 @@ class board:
 
         return self.grid[row]
 
-    def is_valid_move(self, row: int, col: int, value: int) -> bool:
-        """Prüft, ob ein Wert an einer Position regelkonform gesetzt ist
+    # def is_valid_move(self, row: int, col: int, value: int) -> bool:
+    #     """Prüft, ob ein Wert an einer Position regelkonform gesetzt ist
 
-        Ein Zug ist nur dann gültig, wenn der Wert noch nicht in derselben
-        Zeile, Spalte oder im selben 3x3-Block vorkommt.
+    #     Ein Zug ist nur dann gültig, wenn der Wert noch nicht in derselben
+    #     Zeile, Spalte oder im selben 3x3-Block vorkommt.
 
-        Args:
-            row: Zeilenindex von 0 bis 8.
-            col: Spaltenindex von 0 bis 8.
-            value: Zu prüfender Wert von 1 bis 9.
+    #     Args:
+    #         row: Zeilenindex von 0 bis 8.
+    #         col: Spaltenindex von 0 bis 8.
+    #         value: Zu prüfender Wert von 1 bis 9.
 
-        Raises:
-            ValueError: Wenn Koordinaten oder Wert ungültig sind.
-        """
-        if row < 0 or row >= 9 or col < 0 or col >= 9:
-            raise ValueError(f"Ungültige Koordinaten: row={row}, col={col}")
-        if not isinstance(value, int) or value < 1 or value > 9:
-            raise ValueError(f"Ungültiger Wert: {value}. Nur Werte 1-9 erlaubt.")
+    #     Raises:
+    #         ValueError: Wenn Koordinaten oder Wert ungültig sind.
+    #     """
+    #     if row < 0 or row >= 9 or col < 0 or col >= 9:
+    #         raise ValueError(f"Ungültige Koordinaten: row={row}, col={col}")
+    #     if not isinstance(value, int) or value < 1 or value > 9:
+    #         raise ValueError(f"Ungültiger Wert: {value}. Nur Werte 1-9 erlaubt.")
 
-        # Wert darf nicht schon in gleicher Reihe sein
-        if value in self.get_row(row):
-            return False
-        # Wert darf nicht schon in gleicher Spalte sein
-        if value in self.get_col(col):
-            return False
-        # Wert darf nicht schon im Block sein
-        if value in self.get_block(row, col):
-            return False
-        return True
+    #     # Wert darf nicht schon in gleicher Zelle sein
+    #     if self.grid[row][col] != 0 and self.grid[row][col] != value:
+    #         return False
+    #     # Wert darf nicht schon in gleicher Reihe sein
+    #     if value in self.get_row(row):
+    #         return False
+    #     # Wert darf nicht schon in gleicher Spalte sein
+    #     if value in self.get_col(col):
+    #         return False
+    #     # Wert darf nicht schon im Block sein
+    #     if value in self.get_block(row, col):
+    #         return False
+    #     return True
 
     def get_block(self, row: int, col: int) -> list[int]:
         """Gibt den 3x3-Block einer Position als flache Liste zurück.
@@ -143,7 +146,10 @@ class board:
             True, wenn der gewählte Bereich die Zahlen 1-9 genau einmal enthält,
             sonst False.
         """
-
+        if typ not in ("block", "row", "col"):
+            raise ValueError(
+                f"Ungültiger Typ: {typ}. Muss 'block', 'row' oder 'col' sein."
+            )
         if typ == "block":
             if row is None or col is None:
                 raise ValueError("Für 'block' müssen row und col angegeben werden.")
@@ -162,6 +168,8 @@ class board:
             if row is None:
                 raise ValueError("Für 'row' muss ein Zeilenindex angegeben werden.")
             check = self.get_row(row)
+            if any(x < 1 or x > 9 for x in check):
+                raise ValueError("Ungültige Werte in der Zeile")
             if len(set(check)) != 9:
                 return False
             else:
@@ -173,6 +181,9 @@ class board:
             if col is None:
                 raise ValueError("Für 'col' muss ein Spaltenindex angegeben werden.")
             check = self.get_col(col)
+            if any(x < 1 or x > 9 for x in check):
+                raise ValueError("Ungültige Werte in der Spalte")
+
             if len(set(check)) != 9:
                 return False
             else:
