@@ -19,7 +19,7 @@ def test_board_validity_simple_positive():
         [4, 2, 6, 8, 5, 3, 7, 9, 1],
         [7, 1, 3, 9, 2, 4, 8, 5, 6],
         [9, 6, 1, 5, 3, 7, 2, 8, 4],
-        [2, 8, 3, 4, 1, 9, 6, 3, 5],
+        [2, 8, 7, 4, 1, 9, 6, 3, 5],
         [3, 4, 5, 2, 8, 6, 1, 7, 9],
     ]
 
@@ -30,8 +30,8 @@ def test_board_validity_simple_positive():
     failed_rows = [r for r in range(9) if not brett.is_solved("row", row=r)]
     failed_cols = [c for c in range(9) if not brett.is_solved("col", col=c)]
 
-    assert failed_rows, f"Fehlerhafte Zeilen: {failed_rows}"
-    assert failed_cols, f"Fehlerhafte Spalten: {failed_cols}"
+    assert not failed_rows, f"Fehlerhafte Zeilen: {failed_rows}"
+    assert not failed_cols, f"Fehlerhafte Spalten: {failed_cols}"
 
 
 def test_board_validity_simple_negative():
